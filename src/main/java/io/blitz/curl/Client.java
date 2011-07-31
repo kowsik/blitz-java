@@ -180,6 +180,46 @@ public class Client {
     }
     
     /**
+     * Send a abort request for a specified job.
+     * @param jobId the id of the job to be aborted
+     * @return a deserialized response
+     */
+    public Map<String, Object> abort(String jobId) {
+        if(jobId == null) {
+            throw new BlitzException("client", "Invalid job ID");
+        }
+        try {
+            String data = "";
+            URL url = new URL("http", host, port, "/api/1/jobs/"+jobId+"/abort");
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            //set the headers
+            addCredentials(connection);
+            connection.setRequestProperty("content-length", Integer.toString(data.length()));
+            //set the method
+            connection.setRequestMethod("PUT");
+            //sends the empty data
+            connection.setDoOutput(true);
+            OutputStream ost = connection.getOutputStream();
+            PrintWriter pw = new PrintWriter(ost);
+            pw.print(data);
+            pw.flush();
+            pw.close();
+            //gets the response
+            InputStream stream = connection.getInputStream();
+            return fromJsonStream(stream);
+        } catch (UnknownServiceException ex) {
+            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+            throw new BlitzException("server", "Protocol does not support input");
+        } catch (MalformedURLException ex) {
+            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+            throw new BlitzException("client", "Malformed URL. Please check your host");
+        } catch (IOException ex) {
+            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+            throw new BlitzException("server", "Unknown problem connecting with the server");
+        }
+    }
+    
+    /**
      * Gets a JSON string from a <code>InputStream</code> and deserialize it.
      * @param stream the stream that will input the JSON
      * @return a map with the deserialized JSON response

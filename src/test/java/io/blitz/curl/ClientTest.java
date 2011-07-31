@@ -272,7 +272,7 @@ public class ClientTest {
         handler.getConnection().setResponseData(responseData);
         
         Client client = new Client("user", "apiKey", "localhost", 9295);
-        Map<String, Object> response = client.getJobStatus("a123");
+        Map<String, Object> response = client.getJobStatus("c123");
         
         assertNotNull(response);
         assertNotNull(response.get("ok"));
@@ -287,5 +287,22 @@ public class ClientTest {
         assertEquals(result.get("region"), "california");
         assertNotNull(result.get("timeline"));
         assertEquals(result.get("timeline").getClass(), ArrayList.class);
+    }
+
+    @Test
+    public void successfulAbort() {
+        //create a expected response data
+        String responseData = "{\"_id\":\"c123\",\"ok\":true}";
+        handler.getConnection().setResponseData(responseData);
+        
+        Client client = new Client("user", "apiKey", "localhost", 9295);
+        Map<String, Object> response = client.abort("c123");
+        
+        assertNotNull(response);
+        assertNotNull(response.get("ok"));
+        assertEquals(response.get("ok").getClass(), Boolean.class);
+        assertTrue((Boolean)response.get("ok"));
+        assertNotNull(response.get("_id"));
+        assertEquals(response.get("_id"), "c123");
     }
 }
