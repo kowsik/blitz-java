@@ -98,9 +98,6 @@ public class Client {
                 }
             }
             return response;
-        } catch (UnknownServiceException ex) {
-            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-            throw new BlitzException("server", "Protocol does not support input");
         } catch (MalformedURLException ex) {
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
             throw new BlitzException("client", "Malformed URL. Please check your host");
@@ -138,9 +135,6 @@ public class Client {
             //gets the response
             InputStream stream = connection.getInputStream();
             return fromJsonStream(stream);
-        } catch (UnknownServiceException ex) {
-            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-            throw new BlitzException("server", "Protocol does not support input");
         } catch (MalformedURLException ex) {
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
             throw new BlitzException("client", "Malformed URL. Please check your host");
@@ -167,9 +161,6 @@ public class Client {
             //gets the response
             InputStream stream = connection.getInputStream();
             return fromJsonStream(stream);
-        } catch (UnknownServiceException ex) {
-            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-            throw new BlitzException("server", "Protocol does not support input");
         } catch (MalformedURLException ex) {
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
             throw new BlitzException("client", "Malformed URL. Please check your host");
@@ -207,9 +198,6 @@ public class Client {
             //gets the response
             InputStream stream = connection.getInputStream();
             return fromJsonStream(stream);
-        } catch (UnknownServiceException ex) {
-            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-            throw new BlitzException("server", "Protocol does not support input");
         } catch (MalformedURLException ex) {
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
             throw new BlitzException("client", "Malformed URL. Please check your host");
