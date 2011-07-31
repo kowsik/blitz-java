@@ -86,6 +86,8 @@ public abstract class AbstractTest<Listener extends IListener, Result> extends T
      * This method verifies the test requirements and throws a 
      * <code>ValidationException</code> when necessary.
      * @throws io.blitz.curl.exception.ValidationException
+     * @see io.blitz.curl.Sprint#checkRequirements() 
+     * @see io.blitz.curl.Rush#checkRequirements() 
      */
     public abstract void checkRequirements() throws ValidationException;
     
@@ -152,8 +154,11 @@ public abstract class AbstractTest<Listener extends IListener, Result> extends T
     }
     
     /**
-     * 
-     * @param result 
+     * Should return a <code>Result</code> object populated with the 
+     * successful response from the server.
+     * @param result the deserialized result from the JSON response
+     * @see io.blitz.curl.Sprint#createSuccessResult(java.util.Map) 
+     * @see io.blitz.curl.Rush#createSuccessResult(java.util.Map) 
      */
     protected abstract Result createSuccessResult(Map<String, Object> result);
 

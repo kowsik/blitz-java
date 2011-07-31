@@ -63,7 +63,7 @@ r.execute();
 ## Dependencies
 
 If you are not using maven, you must download the dependencies jar archives and 
-add them to your classpah.
+add them to your classpath.
 
 ### Runtime
 

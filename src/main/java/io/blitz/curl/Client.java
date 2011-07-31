@@ -151,9 +151,9 @@ public class Client {
     }
 
     /**
-     * 
-     * @param jobId
-     * @return 
+     * Issue a job status request to the server.
+     * @param jobId the id of the job
+     * @return a deserialized map with the current status
      */
     public Map<String, Object> getJobStatus(String jobId) {
         if(jobId == null) {
