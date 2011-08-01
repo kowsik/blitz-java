@@ -85,7 +85,6 @@ public class SprintTest {
         assertEquals(handler.getConnection().getHeaders().get("X-API-Key"), "private-key");
         String output = handler.getConnection().getOutputStreamAsString("UTF-8");
         assertEquals(output, "{\"url\":\"http://example.com\"}");
-        s.getScheduler().awaitTermination(1, TimeUnit.MINUTES);
     }
     
     @Test
@@ -221,7 +220,6 @@ public class SprintTest {
 
         boolean aborted = s.abort();
         assertTrue(aborted);
-        s.getScheduler().awaitTermination(1, TimeUnit.MINUTES);
     }
 }
 

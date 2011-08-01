@@ -90,7 +90,6 @@ public class RushTest {
                 + "{\"start\":1,\"end\":10,\"duration\":10}]},"
                 + "\"url\":\"http://example.com\"}");
         
-        r.getScheduler().awaitTermination(1, TimeUnit.MINUTES);
     }
     
     @Test
@@ -263,7 +262,6 @@ public class RushTest {
         boolean aborted = r.abort();
         assertTrue(aborted);
 
-        r.getScheduler().awaitTermination(1, TimeUnit.MINUTES);
     }
 }
 
