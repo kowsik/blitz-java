@@ -273,4 +273,14 @@ public abstract class AbstractTest<Listener extends IListener, Result> extends T
         this.host = host;
         this.port = port;
     }
+    
+    /**
+     * Aborts the current job. Sending a abort request doesn't guarantee that 
+     * the job will stop immediately.
+     * @return true if the server accepts the request
+     */
+    public boolean abort() {
+        Map<String, Object> job = client.abort(jobId);
+        return job != null && job.containsKey("ok");
+    }
 }

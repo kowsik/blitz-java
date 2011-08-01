@@ -25,7 +25,6 @@ import java.net.HttpCookie;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.UnknownServiceException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.logging.Level;
