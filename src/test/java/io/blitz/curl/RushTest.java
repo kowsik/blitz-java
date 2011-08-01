@@ -2,6 +2,8 @@ package io.blitz.curl;
 
 import io.blitz.curl.config.Interval;
 import io.blitz.curl.config.Pattern;
+import io.blitz.curl.exception.AuthenticationException;
+import io.blitz.curl.exception.BlitzException;
 import io.blitz.curl.exception.ValidationException;
 import io.blitz.curl.rush.IRushListener;
 import io.blitz.curl.rush.RushResult;
@@ -69,17 +71,12 @@ public class RushTest {
         intervals.add(new Interval(1, 10, 10));
         r.setPattern(new Pattern(intervals));
         r.addListener(new IRushListener() {
-
-            public void onError(ErrorResult result) {
-                // fail if we get an error
-                assertFalse(true);
-            }
-
-            public void onSuccess(RushResult result) {
+            public boolean onData(RushResult result) {
                 assertNotNull(result);
                 assertNotNull(result.getTimeline());
                 assertEquals("california", result.getRegion());
                 assertFalse(result.getTimeline().isEmpty());
+                return true;
             }
         });
         r.execute();
@@ -88,7 +85,6 @@ public class RushTest {
         assertEquals(output, "{\"pattern\":{\"intervals\":["
                 + "{\"start\":1,\"end\":10,\"duration\":10}]},"
                 + "\"url\":\"http://example.com\"}");
-        
     }
     
     @Test
@@ -97,26 +93,29 @@ public class RushTest {
         handler.getConnection().setMappedData("/login/api", 
                 "{\"error\":\"login\", \"reason\":\"test\"}");
         
-        Rush r = new Rush("user", "public-key", "localhost", 9295);
-        r.setUrl(new URL("http://example.com"));
-        Collection<Interval> intervals = new ArrayList<Interval>();
-        intervals.add(new Interval(1, 10, 10));
-        r.setPattern(new Pattern(intervals));
-        r.addListener(new IRushListener() {
-
-            public void onError(ErrorResult result) {
-                assertNotNull(result);
-                assertEquals("login", result.getError());
-                assertEquals("test", result.getReason());
-            }
-
-            public void onSuccess(RushResult result) {
-                // fail if we get a ok message
-                assertFalse(true);
-            }
-        });
-        r.execute();
-        assertEquals(handler.getConnection().getHeaders().get("X-API-Key"), "public-key");
+        try {
+            Rush r = new Rush("user", "public-key", "localhost", 9295);
+            r.setUrl(new URL("http://example.com"));
+            Collection<Interval> intervals = new ArrayList<Interval>();
+            intervals.add(new Interval(1, 10, 10));
+            r.setPattern(new Pattern(intervals));
+            r.addListener(new IRushListener() {
+                public boolean onData(RushResult result) {
+                    // fail if we get a ok message
+                    assertFalse(true);
+                    return true;
+                }
+            });
+            r.execute();
+        }
+        catch(AuthenticationException ex) {
+            assertNotNull(ex);
+            assertEquals("login", ex.getError());
+            assertEquals("test", ex.getReason());
+        }
+        finally {
+            assertEquals(handler.getConnection().getHeaders().get("X-API-Key"), "public-key");
+        }
     }
 
     @Test
@@ -128,30 +127,34 @@ public class RushTest {
         //execute response
         handler.getConnection().setMappedData("/api/1/curl/execute", 
                 "{\"error\":\"throttle\", \"reason\":\"Slow down please!\"}");
-        
-        Rush r = new Rush("user", "public-key", "localhost", 9295);
-        r.setUrl(new URL("http://example.com"));
-        Collection<Interval> intervals = new ArrayList<Interval>();
-        intervals.add(new Interval(1, 10, 10));
-        r.setPattern(new Pattern(intervals));
-        r.addListener(new IRushListener() {
 
-            public void onError(ErrorResult result) {
-                assertNotNull(result);
-                assertEquals("throttle", result.getError());
-            }
-
-            public void onSuccess(RushResult result) {
-                // fail if we get a ok message
-                assertFalse(true);
-            }
-        });
-        r.execute();
-        assertEquals(handler.getConnection().getHeaders().get("X-API-Key"), "private-key");
-        String output = handler.getConnection().getOutputStreamAsString("UTF-8");
-        assertEquals(output, "{\"pattern\":{\"intervals\":["
-                + "{\"start\":1,\"end\":10,\"duration\":10}]},"
-                + "\"url\":\"http://example.com\"}");
+        try {
+            Rush r = new Rush("user", "public-key", "localhost", 9295);
+            r.setUrl(new URL("http://example.com"));
+            Collection<Interval> intervals = new ArrayList<Interval>();
+            intervals.add(new Interval(1, 10, 10));
+            r.setPattern(new Pattern(intervals));
+            r.addListener(new IRushListener() {
+                public boolean onData(RushResult result) {
+                    // fail if we get a ok message
+                    assertFalse(true);
+                    return true;
+                }
+            });
+            r.execute();
+        }
+        catch(BlitzException ex) {
+            assertNotNull(ex);
+            assertEquals("throttle", ex.getError());
+            assertEquals("Slow down please!", ex.getReason());
+        }
+        finally {
+            assertEquals(handler.getConnection().getHeaders().get("X-API-Key"), "private-key");
+            String output = handler.getConnection().getOutputStreamAsString("UTF-8");
+            assertEquals(output, "{\"pattern\":{\"intervals\":["
+                    + "{\"start\":1,\"end\":10,\"duration\":10}]},"
+                    + "\"url\":\"http://example.com\"}");
+        }
     }
 
     @Test
@@ -161,14 +164,10 @@ public class RushTest {
             r.setUrl(new URL("http://example.com"));
             r.addListener(new IRushListener() {
 
-                public void onError(ErrorResult result) {
-                    // fail if we get an error response
-                    assertFalse(true);
-                }
-
-                public void onSuccess(RushResult result) {
+                public boolean onData(RushResult result) {
                     // fail if we get a ok message
                     assertFalse(true);
+                    return true;
                 }
             });
             r.execute();
@@ -189,14 +188,10 @@ public class RushTest {
             r.setPattern(new Pattern(intervals));
             r.addListener(new IRushListener() {
 
-                public void onError(ErrorResult result) {
-                    // fail if we get an error response
-                    assertFalse(true);
-                }
-
-                public void onSuccess(RushResult result) {
+                public boolean onData(RushResult result) {
                     // fail if we get a ok message
                     assertFalse(true);
+                    return true;
                 }
             });
             r.execute();
@@ -238,17 +233,12 @@ public class RushTest {
         intervals.add(new Interval(1, 10, 10));
         r.setPattern(new Pattern(intervals));
         r.addListener(new IRushListener() {
-
-            public void onError(ErrorResult result) {
-                // fail if we get an error
-                assertFalse(true);
-            }
-
-            public void onSuccess(RushResult result) {
+            public boolean onData(RushResult result) {
                 assertNotNull(result);
                 assertNotNull(result.getTimeline());
                 assertEquals("california", result.getRegion());
                 assertFalse(result.getTimeline().isEmpty());
+                return false;
             }
         });
         r.execute();
@@ -257,10 +247,6 @@ public class RushTest {
         assertEquals(output, "{\"pattern\":{\"intervals\":["
                 + "{\"start\":1,\"end\":10,\"duration\":10}]},"
                 + "\"url\":\"http://example.com\"}");
-
-        boolean aborted = r.abort();
-        assertTrue(aborted);
-
     }
 }
 

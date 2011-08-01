@@ -24,11 +24,8 @@ import java.util.Map;
  * intervals.add(new Interval(1, 250, 60));
  * rush.setPattern(new Pattern(intervals));
  * rush.addListener(new IRushListener() {
- *      onError(ErroResult error) {
- *          // do something...
- *      }
- *      onSuccess(RushtResult result) {
- *          // do something...
+ *      booolean onData(RushResult result) {
+ *          //do something...
  *      }
  * });
  * rush.execute();

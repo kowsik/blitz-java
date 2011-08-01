@@ -17,11 +17,8 @@ import java.util.Map;
  * Sprint sprint = new Sprint("you@example.com", "my-bitz-api-key");
  * sprint.setUrl(new java.net.URL("http://your.cool.app"));
  * sprint.addListener(new ISprintListener() {
- *      onError(ErroResult error) {
- *          // do something...
- *      }
- *      onSuccess(SprintResult result) {
- *          // do something...
+ *      booolean onData(SprintResult result) {
+ *          //do something...
  *      }
  * });
  * sprint.execute();

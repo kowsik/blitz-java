@@ -1,5 +1,7 @@
 package io.blitz.curl;
 
+import io.blitz.curl.exception.AuthenticationException;
+import io.blitz.curl.exception.BlitzException;
 import io.blitz.curl.exception.ValidationException;
 import io.blitz.curl.sprint.ISprintListener;
 import io.blitz.curl.sprint.SprintResult;
@@ -61,13 +63,7 @@ public class SprintTest {
         Sprint s = new Sprint("user", "public-key", "localhost", 9295);
         s.setUrl(new URL("http://example.com"));
         s.addListener(new ISprintListener() {
-
-            public void onError(ErrorResult result) {
-                // fail if we get an error
-                assertFalse(true);
-            }
-
-            public void onSuccess(SprintResult result) {
+            public boolean onData(SprintResult result) {
                 assertNotNull(result);
                 assertNotNull(result.getRequest());
                 assertNotNull(result.getResponse());
@@ -78,6 +74,7 @@ public class SprintTest {
                 assertEquals(1, result.getRequest().getHeaders().size());
                 assertNotNull(result.getRequest().getHeaders().get("a"));
                 assertEquals("b", result.getRequest().getHeaders().get("a"));
+                return true;
             }
         });
         s.execute();
@@ -91,24 +88,27 @@ public class SprintTest {
         //login response
         handler.getConnection().setMappedData("/login/api", 
                 "{\"error\":\"login\", \"reason\":\"test\"}");
-        
+
+        try {
         Sprint s = new Sprint("user", "public-key", "localhost", 9295);
         s.setUrl(new URL("http://example.com"));
         s.addListener(new ISprintListener() {
-
-            public void onError(ErrorResult result) {
-                assertNotNull(result);
-                assertEquals("login", result.getError());
-                assertEquals("test", result.getReason());
-            }
-
-            public void onSuccess(SprintResult result) {
+            public boolean onData(SprintResult result) {
                 // fail if we get a ok message
                 assertFalse(true);
+                return true;
             }
         });
         s.execute();
-        assertEquals(handler.getConnection().getHeaders().get("X-API-Key"), "public-key");
+        }
+        catch(AuthenticationException ex) {
+                assertNotNull(ex);
+                assertEquals("login", ex.getError());
+                assertEquals("test", ex.getReason());
+        }
+        finally {
+            assertEquals(handler.getConnection().getHeaders().get("X-API-Key"), "public-key");
+        }
     }
 
     @Test
@@ -121,24 +121,28 @@ public class SprintTest {
         handler.getConnection().setMappedData("/api/1/curl/execute", 
                 "{\"error\":\"throttle\", \"reason\":\"Slow down please!\"}");
         
+        try {
         Sprint s = new Sprint("user", "public-key", "localhost", 9295);
         s.setUrl(new URL("http://example.com"));
         s.addListener(new ISprintListener() {
-
-            public void onError(ErrorResult result) {
-                assertNotNull(result);
-                assertEquals("throttle", result.getError());
-            }
-
-            public void onSuccess(SprintResult result) {
+            public boolean onData(SprintResult result) {
                 // fail if we get a ok message
                 assertFalse(true);
+                return true;
             }
         });
         s.execute();
-        assertEquals(handler.getConnection().getHeaders().get("X-API-Key"), "private-key");
-        String output = handler.getConnection().getOutputStreamAsString("UTF-8");
-        assertEquals(output, "{\"url\":\"http://example.com\"}");
+        }
+        catch(BlitzException ex) {
+            assertNotNull(ex);
+            assertEquals("throttle", ex.getError());
+            assertEquals("Slow down please!", ex.getReason());
+        }
+        finally {
+            assertEquals(handler.getConnection().getHeaders().get("X-API-Key"), "private-key");
+            String output = handler.getConnection().getOutputStreamAsString("UTF-8");
+            assertEquals(output, "{\"url\":\"http://example.com\"}");
+        }
     }
 
     @Test
@@ -146,15 +150,10 @@ public class SprintTest {
         try {
             Sprint s = new Sprint("user", "public-key", "localhost", 9295);
             s.addListener(new ISprintListener() {
-
-                public void onError(ErrorResult result) {
-                    // fail if we get an error
-                    assertFalse(true);
-                }
-
-                public void onSuccess(SprintResult result) {
+                public boolean onData(SprintResult result) {
                     // fail if we get a ok message
                     assertFalse(true);
+                    return true;
                 }
             });
             s.execute();
@@ -193,13 +192,7 @@ public class SprintTest {
         Sprint s = new Sprint("user", "public-key", "localhost", 9295);
         s.setUrl(new URL("http://example.com"));
         s.addListener(new ISprintListener() {
-
-            public void onError(ErrorResult result) {
-                // fail if we get an error
-                assertFalse(true);
-            }
-
-            public void onSuccess(SprintResult result) {
+            public boolean onData(SprintResult result) {
                 assertNotNull(result);
                 assertNotNull(result.getRequest());
                 assertNotNull(result.getResponse());
@@ -210,15 +203,13 @@ public class SprintTest {
                 assertEquals(1, result.getRequest().getHeaders().size());
                 assertNotNull(result.getRequest().getHeaders().get("a"));
                 assertEquals("b", result.getRequest().getHeaders().get("a"));
+                return false;
             }
         });
         s.execute();
         assertEquals(handler.getConnection().getHeaders().get("X-API-Key"), "private-key");
         String output = handler.getConnection().getOutputStreamAsString("UTF-8");
         assertEquals(output, "{\"url\":\"http://example.com\"}");
-
-        boolean aborted = s.abort();
-        assertTrue(aborted);
     }
 }
 

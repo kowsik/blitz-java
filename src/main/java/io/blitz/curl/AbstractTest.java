@@ -105,8 +105,7 @@ public abstract class AbstractTest<Listener extends IListener, Result>
             if (response.containsKey("error")) {
                 String error = (String) response.get("error");
                 String reason = (String) response.get("reason");
-                notifyError(error, reason);
-                return;
+                throw new AuthenticationException(error, reason);
             }
         }
         //after authentication, we send this job to the server (excluding transient)
@@ -115,8 +114,7 @@ public abstract class AbstractTest<Listener extends IListener, Result>
         if(response.containsKey("error")) {
             String error = (String) response.get("error");
             String reason = (String) response.get("reason");
-            notifyError(error, reason);
-            return;
+            throw new BlitzException(error, reason);
         }
         
         jobId = (String) response.get("job_id");
@@ -125,29 +123,19 @@ public abstract class AbstractTest<Listener extends IListener, Result>
     
     /**
      * Notify all listneres about an error response from blitz. It calls  
-     * <code>onError</code> on all listeners.
-     * @param error
-     * @param reason 
-     */
-    protected void notifyError(String error, String reason) {
-        if(listeners != null) {
-            ErrorResult result = new ErrorResult(error, reason);
-            for(Listener listener : listeners) {
-                listener.onError(result);
-            }
-        }
-    }
-    
-    /**
-     * Notify all listneres about an error response from blitz. It calls  
-     * <code>onSuccess</code> on all listeners.
+     * <code>onData</code> on all listeners. If a listener returns false, it will
+     * automatically call abort after notifying all.
      * @param result the result object from the JSON response 
      */
     protected void notifySuccess(Map<String, Object> result) {
         if(listeners != null) {
+            boolean progress = true;
             Result success = createSuccessResult(result);
             for(Listener listener : listeners) {
-                listener.onSuccess(success);
+                 progress = progress && listener.onData(success);
+            }
+            if(!progress) {
+                abort();
             }
         }
     }
@@ -205,15 +193,13 @@ public abstract class AbstractTest<Listener extends IListener, Result>
                 else if(job.containsKey("error")) {
                     String error = (String) job.get("error");
                     String reason = (String) job.get("reason");
-                    notifyError(error, reason);
-                    break;
+                    throw new BlitzException(error, reason);
                 }
                 //if the result was an error
                 else if(result != null && result.containsKey("error")) {
                     String error = (String) result.get("error");
                     String reason = (String) result.get("reason");
-                    notifyError(error, reason);
-                    break;
+                    throw new BlitzException(error, reason);
                 }
                 //notify the listeners that a successful status was acquired
                 notifySuccess(result);

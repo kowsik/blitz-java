@@ -6,10 +6,7 @@ import io.blitz.curl.IListener;
  * Listener for the Sprint test.
  * <pre>
  * ISprintListener listener = new ISprintListener() {
- *      onError(ErrorResult error) {
- *          //do something...
- *      }
- *      onSuccess(SprintResult result) {
+ *      booolean onData(SprintResult result) {
  *          //do something...
  *      }
  * };

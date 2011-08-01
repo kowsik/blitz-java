@@ -6,10 +6,7 @@ import io.blitz.curl.IListener;
  * Listener for the Rush test.
  * <pre>
  * IRushListener listener = new IRushListener() {
- *      onError(ErrorResult error) {
- *          //do something...
- *      }
- *      onSuccess(RushResult result) {
+ *      booolean onData(RushResult result) {
  *          //do something...
  *      }
  * };

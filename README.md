@@ -27,12 +27,7 @@ Then
 Sprint s = new Sprint("your@account.com", "aqbcdge-sjfkgurti-sjdhgft-skdiues");
 s.setUrl(new URL("http://your.cool.app"));
 s.addListener(new ISprintListener() {
-
-    public void onError(ErrorResult result) {
-        System.err.println("ERROR!");
-    }
-
-    public void onSuccess(SprintResult result) {
+    public boolean onData(SprintResult result) {
         System.err.println("SUCCESS!");
     }
 });
@@ -48,12 +43,7 @@ Collection<Interval> intervals = new ArrayList<Interval>();
 intervals.add(new Interval(1, 10, 10));
 r.setPattern(new Pattern(intervals));
 r.addListener(new IRushListener() {
-
-    public void onError(ErrorResult result) {
-        System.err.println("ERROR!");
-    }
-
-    public void onSuccess(RushResult result) {
+    public boolean onData(RushResult result) {
         System.err.println("SUCCESS!");
     }
 });
