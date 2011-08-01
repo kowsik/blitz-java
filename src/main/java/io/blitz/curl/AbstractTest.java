@@ -214,7 +214,7 @@ public abstract class AbstractTest<Listener extends IListener, Result> extends T
                     String error = (String) result.get("error");
                     String reason = (String) result.get("reason");
                     notifyError(error, reason);
-                    continue;
+                    break;
                 }
                 //notify the listeners that a successful status was acquired
                 notifySuccess(result);

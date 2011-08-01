@@ -31,7 +31,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
+ * Makes the HTTP calls to blitz RESTful API, serializing any data on the request
+ * and deserializing the JSON response.
  * @author ghermeto
  */
 public class Client {
