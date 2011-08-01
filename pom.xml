@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>io.blitz</groupId>
-    <artifactId>api-client</artifactId>
+    <artifactId>blitz-api-client</artifactId>
     <version>0.1.1</version>
     <packaging>jar</packaging>
     
@@ -27,7 +27,16 @@
     
     <scm>
         <url>https://github.com/ghermeto/blitz-java</url>
+        <connection>scm:git:git@github.com:ghermeto/blitz-java.git</connection>
     </scm>
+    
+    <developers>
+        <developer>
+            <email>gui.hermeto@gmail.com</email>
+            <name>Guilherme Hermeto</name>
+            <organization>Mu Dynamics</organization>
+        </developer>
+    </developers>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
