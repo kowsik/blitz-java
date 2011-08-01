@@ -1,13 +1,13 @@
 package io.blitz.curl;
 
 import io.blitz.curl.exception.AuthenticationException;
-import io.blitz.curl.exception.BlitzException;
 import io.blitz.curl.exception.ValidationException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Abstract class that templates the core tests execution
@@ -15,6 +15,13 @@ import java.util.logging.Logger;
  */
 public abstract class AbstractTest<Listener extends IListener, Result> extends TestEntity
     implements IObservable<Listener> {
+    
+    /**
+     * Scheduler to periodically run in the getJobStatus and trigger the 
+     * listeners.
+     */
+    private final ScheduledExecutorService scheduler = 
+            Executors.newSingleThreadScheduledExecutor();
     
     /**
      * Transient property used to connect the client when necessary. 
@@ -181,69 +188,12 @@ public abstract class AbstractTest<Listener extends IListener, Result> extends T
     }
     
     /**
-     * Checks the current job status and notify the listeners about errors and 
-     * sucessful responses from the server.
+     * Uses a scheduler to check the current job status and notify the listeners 
+     * about errors and sucessful responses from the server.
      */
     public void checkStatus() {
-        try {
-            do {
-                Thread.sleep(2000);
-
-                Map<String, Object> job = client.getJobStatus(jobId);
-                Map<String, Object> result = getResult(job);
-                String status = (String) job.get("status");
-
-                if(job == null) {
-                    throw new BlitzException("client", "No response.");
-                }
-                //if no result was issued yet (nothing to notify)
-                else if("queued".equalsIgnoreCase(status) || 
-                    ("running".equalsIgnoreCase(status) && result == null)) {
-                    
-                    continue;
-                }
-                //if the server retuned an error
-                else if(job.containsKey("error")) {
-                    String error = (String) job.get("error");
-                    String reason = (String) job.get("reason");
-                    notifyError(error, reason);
-                    break;
-                }
-                //if the result was an error
-                else if(result != null && result.containsKey("error")) {
-                    String error = (String) result.get("error");
-                    String reason = (String) result.get("reason");
-                    notifyError(error, reason);
-                    break;
-                }
-                //notify the listeners that a successful status was acquired
-                notifySuccess(result);
-                
-                if("completed".equalsIgnoreCase(status)) {
-                    break;
-                }
-            }while(true);
-            
-        } catch (InterruptedException ex) {
-            //if any thread interrupted this one
-            Logger.getLogger(AbstractTest.class.getName()).log(Level.SEVERE, null, ex);
-            notifyError("client", ex.getLocalizedMessage());
-        }
-    }
-    
-    /**
-     * Verifies if the job has a result map and returns it.
-     * @param job map response from the job status
-     * @return the job result map or null
-     */
-    private Map<String, Object> getResult(Map<String, Object> job) {
-        if(job != null && job.get("result") != null) {
-            Object obj = job.get("result");
-            if(Map.class.isAssignableFrom(obj.getClass())) {
-                return (Map<String, Object>) obj;
-            }
-        }
-        return null;
+        JobStatus worker = new JobStatus(jobId);
+        scheduler.scheduleWithFixedDelay(worker, 2, 2, TimeUnit.SECONDS);
     }
     
     /**
@@ -282,5 +232,78 @@ public abstract class AbstractTest<Listener extends IListener, Result> extends T
     public boolean abort() {
         Map<String, Object> job = client.abort(jobId);
         return job != null && job.containsKey("ok");
+    }
+    
+    /**
+     * Runnable to be used by the scheduler in the <code>checkStatus()</code>
+     * method and notify the listeners about status change.
+     */
+    class JobStatus implements Runnable {
+        
+        /**
+         * The job id
+         */
+        private String id=null;
+
+        public JobStatus(String jobId) {
+            this.id = jobId;
+        }
+        
+        /**
+         * Checks the current job status
+         */
+        public void run() {
+            Map<String, Object> job = client.getJobStatus(this.id);
+            Map<String, Object> result = getResult(job);
+            String status = (String) job.get("status");
+
+            if(job == null) {
+                notifyError("client", "No Response.");
+            }
+            //if the server retuned an error
+            else if(job.containsKey("error")) {
+                String error = (String) job.get("error");
+                String reason = (String) job.get("reason");
+                notifyError(error, reason);
+                scheduler.shutdown();
+            }
+            //if the result was an error
+            else if(result != null && result.containsKey("error")) {
+                String error = (String) result.get("error");
+                String reason = (String) result.get("reason");
+                notifyError(error, reason);
+                scheduler.shutdown();
+            } 
+            //if no result was issued yet (nothing to notify)
+            else if(!"queued".equalsIgnoreCase(status) &&
+                !("running".equalsIgnoreCase(status) && result == null)) {
+
+                //notify the listeners that a successful status was acquired
+                notifySuccess(result);
+
+                if("completed".equalsIgnoreCase(status)) {
+                    scheduler.shutdown();
+                }
+            }
+        }
+        
+        /**
+         * Verifies if the job has a result map and returns it.
+         * @param job map response from the job status
+         * @return the job result map or null
+         */
+        private Map<String, Object> getResult(Map<String, Object> job) {
+            if(job != null && job.get("result") != null) {
+                Object obj = job.get("result");
+                if(Map.class.isAssignableFrom(obj.getClass())) {
+                    return (Map<String, Object>) obj;
+                }
+            }
+            return null;
+        }
+    }
+    
+    public ScheduledExecutorService getScheduler() {
+        return scheduler;
     }
 }

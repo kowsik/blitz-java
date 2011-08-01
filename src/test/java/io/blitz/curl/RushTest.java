@@ -13,6 +13,7 @@ import java.net.URLStreamHandlerFactory;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -43,7 +44,7 @@ public class RushTest {
     }
     
     @Test
-    public void successful() throws MalformedURLException {
+    public void successful() throws MalformedURLException, InterruptedException {
         //login response
         handler.getConnection().setMappedData("/login/api", 
                 "{\"ok\":true, \"api_key\":\"private-key\"}");
@@ -88,6 +89,8 @@ public class RushTest {
         assertEquals(output, "{\"pattern\":{\"intervals\":["
                 + "{\"start\":1,\"end\":10,\"duration\":10}]},"
                 + "\"url\":\"http://example.com\"}");
+        
+        r.getScheduler().awaitTermination(1, TimeUnit.MINUTES);
     }
     
     @Test
@@ -207,7 +210,7 @@ public class RushTest {
     }
 
     @Test
-    public void abort() throws MalformedURLException {
+    public void abort() throws MalformedURLException, InterruptedException {
         //abort response
         handler.getConnection().setMappedData("/api/1/jobs/c123/abort",
                 "{\"_id\":\"c123\",\"ok\":true}");
@@ -259,6 +262,8 @@ public class RushTest {
 
         boolean aborted = r.abort();
         assertTrue(aborted);
+
+        r.getScheduler().awaitTermination(1, TimeUnit.MINUTES);
     }
 }
 

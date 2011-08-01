@@ -240,7 +240,7 @@ public class Client {
      */
     private String toJson(TestEntity test) {
         Gson gson = new GsonBuilder()
-                .excludeFieldsWithModifiers(Modifier.TRANSIENT)
+                .excludeFieldsWithModifiers(Modifier.TRANSIENT, Modifier.FINAL)
                 .registerTypeAdapter(HttpHeader.class, new HttpHeaderSerializer())
                 .registerTypeAdapter(HttpCookie.class, new HttpCookieSerializer())
                 .registerTypeAdapter(BasicAuthentication.class, new BasicAuthenticationSerializer())

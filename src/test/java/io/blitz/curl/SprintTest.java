@@ -9,6 +9,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLStreamHandlerFactory;
 import java.util.HashMap;
+import java.util.concurrent.TimeUnit;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -39,7 +40,7 @@ public class SprintTest {
     }
     
     @Test
-    public void successful() throws MalformedURLException{
+    public void successful() throws MalformedURLException, InterruptedException{
         //login response
         handler.getConnection().setMappedData("/login/api", 
                 "{\"ok\":true, \"api_key\":\"private-key\"}");
@@ -84,7 +85,7 @@ public class SprintTest {
         assertEquals(handler.getConnection().getHeaders().get("X-API-Key"), "private-key");
         String output = handler.getConnection().getOutputStreamAsString("UTF-8");
         assertEquals(output, "{\"url\":\"http://example.com\"}");
-
+        s.getScheduler().awaitTermination(1, TimeUnit.MINUTES);
     }
     
     @Test
@@ -168,7 +169,7 @@ public class SprintTest {
     }
 
     @Test
-    public void abort() throws MalformedURLException{
+    public void abort() throws MalformedURLException, InterruptedException{
         //abort response
         handler.getConnection().setMappedData("/api/1/jobs/a123/abort",
                 "{\"_id\":\"a123\",\"ok\":true}");
@@ -220,6 +221,7 @@ public class SprintTest {
 
         boolean aborted = s.abort();
         assertTrue(aborted);
+        s.getScheduler().awaitTermination(1, TimeUnit.MINUTES);
     }
 }
 
