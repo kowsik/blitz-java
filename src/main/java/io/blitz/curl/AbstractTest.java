@@ -6,15 +6,13 @@ import io.blitz.curl.exception.ValidationException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Abstract class that templates the core tests execution
  * @author ghermeto
  */
-public abstract class AbstractTest<Listener extends IListener, Result> extends TestEntity
-    implements IObservable<Listener> {
+public abstract class AbstractTest<Listener extends IListener, Result> 
+    extends TestEntity implements IObservable<Listener> {
     
     
     /**
@@ -278,7 +276,7 @@ public abstract class AbstractTest<Listener extends IListener, Result> extends T
      * the job will stop immediately.
      * @return true if the server accepts the request
      */
-    public boolean abort() {
+    protected boolean abort() {
         Map<String, Object> job = client.abort(jobId);
         return job != null && job.containsKey("ok");
     }

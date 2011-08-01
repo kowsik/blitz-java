@@ -13,7 +13,6 @@ import java.net.URLStreamHandlerFactory;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.concurrent.TimeUnit;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
