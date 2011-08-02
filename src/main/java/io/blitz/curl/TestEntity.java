@@ -22,7 +22,7 @@ public class TestEntity {
     private URL url;
     
     /**
-     * Region from which the test should come
+     * Region from which the test should start
      */
     private String region;
     
@@ -38,10 +38,13 @@ public class TestEntity {
     private URL referrer;
     
     /**
-     * 
+     * The expected status response
      */
     private Integer status;
     
+    /**
+     * The timeout to be used on the test
+     */
     private Integer timeout;
     
     /**
@@ -77,7 +80,7 @@ public class TestEntity {
 
     /**
      * Getter for the content property
-     * @return 
+     * @return content
      */
     public Content getContent() {
         return content;
@@ -93,7 +96,7 @@ public class TestEntity {
 
     /**
      * Getter for the cookie list.
-     * @return 
+     * @return cookie list
      */
     public Collection<HttpCookie> getCookies() {
         return cookies;
@@ -110,7 +113,7 @@ public class TestEntity {
 
     /**
      * Getter for the headers
-     * @return 
+     * @return header list
      */
     public Collection<HttpHeader> getHeaders() {
         return headers;
@@ -126,7 +129,7 @@ public class TestEntity {
 
     /**
      * Getter for the referrer property
-     * @return 
+     * @return referrer url
      */
     public URL getReferrer() {
         return referrer;
@@ -142,7 +145,7 @@ public class TestEntity {
 
     /**
      * Getter for the region property
-     * @return 
+     * @return region
      */
     public String getRegion() {
         return region;
@@ -158,7 +161,7 @@ public class TestEntity {
 
     /**
      * Getter for the ssl property
-     * @return 
+     * @return ssl
      */
     public String getSsl() {
         return ssl;
@@ -174,7 +177,7 @@ public class TestEntity {
 
     /**
      * Getter for the status property
-     * @return 
+     * @return http status code
      */
     public Integer getStatus() {
         return status;
@@ -190,7 +193,7 @@ public class TestEntity {
 
     /**
      * Getter for the timeout property
-     * @return 
+     * @return timeout
      */
     public Integer getTimeout() {
         return timeout;
@@ -206,7 +209,7 @@ public class TestEntity {
 
     /**
      * Getter for the url property
-     * @return 
+     * @return url for the test
      */
     public URL getUrl() {
         return url;
@@ -222,7 +225,7 @@ public class TestEntity {
 
     /**
      * Getter for the user property
-     * @return 
+     * @return basic authentication credentials
      */
     public BasicAuthentication getUser() {
         return user;
@@ -238,7 +241,7 @@ public class TestEntity {
 
     /**
      * Getter for the userAgent property
-     * @return 
+     * @return user-agent
      */
     public String getUserAgent() {
         return userAgent;
@@ -254,7 +257,7 @@ public class TestEntity {
 
     /**
      * Getter for the variable hash
-     * @return 
+     * @return map of variables
      */
     public Map<String, IVariable> getVariables() {
         return variables;

@@ -32,7 +32,7 @@ import java.util.Map;
  * </pre>
  * @author ghermeto
  * @version 0.1.0
- * @see {@link io.blitz.curl.AbstractTest AbstractTest}
+ * @see io.blitz.curl.AbstractTest
  */
 public class Rush extends AbstractTest<IRushListener, RushResult> {
     
@@ -52,7 +52,7 @@ public class Rush extends AbstractTest<IRushListener, RushResult> {
     
     /**
      * Getter for the pattern property
-     * @return 
+     * @return pattern object with the list of intervals
      */
     public Pattern getPattern() {
         return pattern;

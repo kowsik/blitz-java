@@ -25,7 +25,7 @@ import java.util.Map;
  * </pre>
  * @author ghermeto
  * @version 0.1.0
- * @see {@link io.blitz.curl.AbstractTest AbstractTest}
+ * @see io.blitz.curl.AbstractTest
  */
 public class Sprint extends AbstractTest<ISprintListener, SprintResult> {
 

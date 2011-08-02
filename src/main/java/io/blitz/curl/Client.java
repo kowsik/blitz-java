@@ -75,8 +75,9 @@ public class Client {
     }
 
     /**
-     * 
-     * @return 
+     * Issue a login request to blitz. Sends the credentials in the header and 
+     * authenticate.
+     * @return the deserialized JSON response with the authenticated api key.
      */
     public Map<String, Object> login() {
         try {
@@ -108,9 +109,9 @@ public class Client {
     }
 
     /**
-     * 
-     * @param test
-     * @return 
+     * Issue a execute request that will try to queue the job.
+     * @param test the test configuration properties to be serialized
+     * @return deserialized JSON with job id if successful
      */
     public Map<String, Object> execute(TestEntity test) {
         if(test == null) {
