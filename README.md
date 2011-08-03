@@ -16,7 +16,8 @@ On your **pom.xml**
 
     <dependency>
         <groupId>io.blitz</groupId>
-        <artifactId>api-client</artifactId>
+        <artifactId>blitz-api-client</artifactId>
+        <version>0.1.2</version>
     </dependency>
 
 Then
@@ -49,6 +50,12 @@ r.addListener(new IRushListener() {
 });
 r.execute();
 ```
+
+## Maven
+
+The blitz api client is available on Maven Central:
+
+    http://repo1.maven.org/maven2/io/blitz/
 
 ## Dependencies
 
